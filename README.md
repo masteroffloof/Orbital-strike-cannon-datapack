@@ -1,6 +1,6 @@
 ![OSC dp](https://cdn.modrinth.com/data/cached_images/0eb02218886909dc791c335b869109cec971b1ab.png)
 
- 
+
 # ✨ Features
 
 1k–5k+ TNT charges — forge a perfect sphere of destruction
