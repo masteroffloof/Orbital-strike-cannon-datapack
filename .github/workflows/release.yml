@@ -50,3 +50,47 @@ jobs:
           asset_path: release/${{ steps.tag.outputs.tag }}.zip
           asset_name: ${{ steps.tag.outputs.tag }}.zip
           asset_content_type: application/zip
+        - name: Create zip of repository (tracked files only)
+          id: create_zip
+          run: |
+            mkdir -p release
+            ZIP_NAME="orbital-datapack-${{ steps.tag.outputs.tag }}.zip"
+            git ls-files > /tmp/files.txt
+            # Exclude common workspace and generated files
+            grep -vE '^(\.github/|\.kiro/|Orbital-strike-cannon-datapack.zip|\.vscode/|node_modules/)' /tmp/files.txt > /tmp/files2.txt
+            zip -@ "release/$ZIP_NAME" < /tmp/files2.txt
+            echo "zip_name=$ZIP_NAME" >> $GITHUB_OUTPUT
+
+        - name: Create or upload release and attach asset (safe)
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            TAG: ${{ steps.tag.outputs.tag }}
+          run: |
+            set -e
+            API="https://api.github.com/repos/$GITHUB_REPOSITORY"
+            ZIP_NAME="orbital-datapack-${TAG}.zip"
+
+            # Check if release exists
+            status=$(curl -s -o /tmp/release.json -w "%{http_code}" -H "Authorization: token $GITHUB_TOKEN" "$API/releases/tags/$TAG")
+            if [ "$status" -eq 200 ]; then
+              upload_url=$(jq -r '.upload_url' /tmp/release.json)
+            else
+              # Create release
+              create=$(curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/json" \
+                --data "{\"tag_name\": \"$TAG\", \"name\": \"$TAG\", \"draft\": false, \"prerelease\": false}" \
+                "$API/releases")
+              upload_url=$(echo "$create" | jq -r '.upload_url')
+            fi
+
+            if [ -z "$upload_url" ] || [ "$upload_url" = "null" ]; then
+              echo "Failed to obtain release upload_url" >&2
+              exit 1
+            fi
+
+            # Trim the template part
+            upload_url=${upload_url%%\{*}
+
+            # Upload asset (replace existing by name)
+            echo "Uploading release asset: release/$ZIP_NAME"
+            curl -s -X POST -H "Authorization: token $GITHUB_TOKEN" -H "Content-Type: application/zip" --data-binary @release/$ZIP_NAME "$upload_url?name=$ZIP_NAME" | jq -r '.url'
+          shell: bash
