@@ -27,3 +27,5 @@ execute as @a if predicate orbital:stab_aim_1_inf at @s run function orbital:osc
 execute as @a if predicate orbital:stab_aim_2_inf at @s run function orbital:osc_rod/stab_aim_2_inf/check_bobber_power_2
 
 execute as @a if predicate orbital:stab_aim_3_inf at @s run function orbital:osc_rod/stab_aim_3_inf/check_bobber_power_3
+
+execute as @a if predicate orbital:stab_aim_4_inf at @s run function orbital:osc_rod/stab_aim_4_inf/check_bobber_power_4

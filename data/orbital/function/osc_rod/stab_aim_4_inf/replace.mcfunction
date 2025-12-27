@@ -1,0 +1,2 @@
+item replace entity @a[tag=replace4] weapon.mainhand with minecraft:fishing_rod[custom_data={stab_aim_4_inf:1b},minecraft:custom_name=[{"text":"STAB POWER 4 (aim infinity)","italic":false}]]
+tag @a[tag=replace4] remove replace
