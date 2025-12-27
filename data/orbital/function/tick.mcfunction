@@ -38,3 +38,5 @@ execute as @a if predicate orbital:nuke_power_4_inf at @s run function orbital:o
 
 execute as @a if predicate orbital:nuke_aim_2_inf at @s run function orbital:osc_rod/nuke_aim_2_inf/check_bobber_power_2
 execute as @a if predicate orbital:nuke_aim_3_inf at @s run function orbital:osc_rod/nuke_aim_3_inf/check_bobber_power_3
+
+execute as @a if predicate orbital:nuke_power_4 at @s run function orbital:osc_rod/nuke_power_4/check_bobber_power_4
